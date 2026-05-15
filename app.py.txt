@@ -1,0 +1,48 @@
+import streamlit as st
+from crew import shopping_crew
+
+st.set_page_config(
+    page_title="Agente de Compras Inteligente",
+    page_icon="🛒",
+    layout="centered"
+)
+
+st.title("🛒 Agente de Compras Inteligente")
+st.markdown("Usá IA para encontrar la mejor compra según tu presupuesto.")
+st.divider()
+
+with st.form("formulario"):
+    producto = st.text_input(
+        "¿Qué querés comprar?",
+        placeholder="Ej: auriculares bluetooth inalámbricos"
+    )
+    presupuesto = st.text_input(
+        "¿Cuál es tu presupuesto máximo?",
+        placeholder="Ej: 50000 pesos argentinos"
+    )
+    buscar = st.form_submit_button("🔍 Analizar opciones", use_container_width=True)
+
+if buscar:
+    if not producto or not presupuesto:
+        st.warning("Por favor completá los dos campos.")
+    else:
+        with st.spinner("Los agentes están analizando opciones... esto tarda 1-2 minutos ⏳"):
+            resultado = shopping_crew.kickoff(inputs={
+                "producto": producto,
+                "presupuesto": presupuesto
+            })
+
+        st.success("¡Análisis completado!")
+        st.divider()
+
+        st.markdown("## 📊 Informe de Compra")
+        st.markdown(str(resultado))
+
+        st.divider()
+        st.download_button(
+            label="⬇️ Descargar informe",
+            data=str(resultado),
+            file_name="informe_compra.txt",
+            mime="text/plain",
+            use_container_width=True
+        )
